@@ -1,171 +1,328 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import { Send, Music, User, Bot, Loader2 } from 'lucide-react';
+import { Send, Music, User, Bot, Loader2, MessageSquare, Plus, Settings, Trash2} from 'lucide-react';
+import FeedbackModal from './feedbackmodal';
+import SettingsModal from './settingsmodal';
+import AuthModal from './authmodal';
+import SpotifyCard from './spotifycard';
+import BotMessage from './botmessage';
+import MessageSkeleton from './messageskeleton';
 
 function App() {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([
-    { sender: 'bot', text: '¡Hola! Soy tu asistente musical. Conecta tu cuenta de Spotify para comenzar o pregúntame algo sobre música.' }
-  ]);
+  // Estados Principales
   const [userId, setUserId] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  
+  // Estados de Interfaz
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [chatHistoryList, setChatHistoryList] = useState([]); // Lista para el sidebar
+  
+  // Modales
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  // 1. Efecto para capturar el User ID de la URL tras el login
-  useEffect(() => {
+
+  // 1. Carga Inicial y Login
+ useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const uid = params.get('uid');
-    if (uid) {
-      setUserId(uid);
-      // Limpiamos la URL para que se vea limpia
-      window.history.replaceState({}, document.title, "/");
-      setMessages(prev => [...prev, { sender: 'bot', text: '¡Conexión con Spotify exitosa! Analizaré tus gustos para darte mejores recomendaciones. ¿Qué quieres escuchar hoy?' }]);
+    const uidFromUrl = params.get('uid');
+    
+    // Buscar la sesión almacenada localmente
+    const storedUserId = localStorage.getItem('user_session_id');
+
+    let currentUserId = null;
+
+    if (uidFromUrl) {
+      // Caso A: Usuario vuelve de Spotify (Sesión nueva o reestablecida)
+      currentUserId = uidFromUrl;
+      localStorage.setItem('user_session_id', uidFromUrl); // GUARDAMOS la sesión
+      window.history.replaceState({}, document.title, "/"); // Limpiar URL
+      
+    } else if (storedUserId) {
+      // Caso B: El usuario simplemente recargó la página (Sesión persistente)
+      currentUserId = storedUserId;
+    }
+
+    if (currentUserId) {
+      setUserId(currentUserId);
+      fetchConversations(currentUserId);
+      setIsAuthOpen(false); // Aseguramos que el modal esté cerrado
+    } else {
+      // Caso C: No hay UID en URL ni en LocalStorage (No hay sesión)
+      setIsAuthOpen(true); // Abrir modal
     }
   }, []);
 
-  const handleLogin = async () => {
+  // 2. Funciones de API
+  const fetchConversations = async (uid) => {
     try {
-      const response = await axios.get('http://localhost:8000/login');
-      window.location.href = response.data.url;
+      const res = await axios.get(`http://127.0.0.1:8000/conversations/${uid}`);
+      setChatHistoryList(res.data.summaries);
     } catch (error) {
-      console.error("Error iniciando login:", error);
+      console.error("Error cargando historial:", error);
     }
   };
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    if (isLoading) return;
-
-    const userText = input;
-    setInput(''); // Limpiar input inmediatamente
-    
-    // Agregar mensaje del usuario al chat
-    setMessages(prev => [...prev, { sender: 'user', text: userText }]);
-    setIsLoading(true); // Activar estado de carga (Latencia percibida)
-
+  const loadConversation = async (convId) => {
+    if (!userId) return;
+    setIsLoading(true);
     try {
-      // 2. Petición al Backend
-      const response = await axios.post('http://localhost:8000/chat', {
-        message: userText,
-        user_id: userId || "anonymous" // Enviamos el ID si existe
-      });
-
-      // Agregar respuesta del bot
-      setMessages(prev => [...prev, { sender: 'bot', text: response.data.response }]);
+      // Cargar mensajes antiguos
+      const res = await axios.get(`http://127.0.0.1:8000/history/${userId}/${convId}`);
+      setConversationId(convId);
+      // Mapeamos el formato de la DB al formato del Frontend
+      const formattedMsgs = res.data.messages.map(m => ({
+        sender: m.role,
+        text: m.text
+      }));
+      setMessages(formattedMsgs);
     } catch (error) {
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Lo siento, tuve un problema conectando con el servidor.' }]);
-      console.error("Error en chat:", error);
+      console.error("Error cargando chat:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Permitir enviar con la tecla Enter
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') sendMessage();
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/login');
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error("Error login:", error);
+    }
   };
 
-  return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--bg-dark)' }}>
-      {/* Barra Lateral */}
-      <div style={{ width: '260px', background: '#000', padding: '20px', borderRight: '1px solid #333', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <h2 style={{ color: 'white', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  const handleDeleteChat = async (e, chatId) => {
+    e.stopPropagation(); // Evita que se abra el chat al hacer click en borrar
+    if (!confirm("¿Borrar este chat?")) return;
+
+    try {
+        await axios.delete(`http://127.0.0.1:8000/conversations/${userId}/${chatId}`);
+        // Actualizar la lista visualmente
+        setChatHistoryList(prev => prev.filter(chat => chat.id !== chatId));
+        // Si borramos el chat actual, limpiar la pantalla
+        if (conversationId === chatId) {
+            setConversationId(null);
+            setMessages([]);
+        }
+    } catch (error) {
+        console.error("Error borrando chat:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_session_id');
+    setUserId(null);
+    setMessages([]);
+    setChatHistoryList([]);
+    setConversationId(null);
+    window.history.replaceState({}, document.title, "/");
+    // Opcional: Limpiar localStorage si lo usas
+  };
+
+  const handleNewChat = async () => {
+      if (!userId) return;
+      try {
+          const res = await axios.post('http://127.0.0.1:8000/new_chat', { user_id: userId });
+          setConversationId(res.data.conversation_id);
+          setMessages([{ sender: 'bot', text: '¡Nuevo chat iniciado! ¿Qué música exploramos hoy?' }]);
+          fetchConversations(userId); // Actualizar lista
+      } catch (error) {
+          alert("Error: " + (error.response?.data?.detail || "No se pudo crear chat"));
+      }
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+    const userText = input;
+    setInput('');
+    setMessages(prev => [...prev, { sender: 'user', text: userText }]);
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/chat', {
+        message: userText,
+        user_id: userId || "anonymous",
+        conversation_id: conversationId
+      });
+
+      setMessages(prev => [...prev, { 
+      sender: 'bot', 
+      text: response.data.response,
+      spotifyData: response.data.spotify_data 
+      }]);
+
+      if (!conversationId) {
+        setConversationId(response.data.conversation_id);
+        fetchConversations(userId); // Refrescar lista si era chat nuevo
+      }
+    } catch (error) {
+        setMessages(prev => [...prev, { sender: 'bot', text: 'Error al conectar con el servidor.' }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Render
+return (
+    <div className="app-container">
+      
+      {/* --- BARRA LATERAL --- */}
+      <div className="sidebar">
+        
+        <h2 className="sidebar-header">
           <Music color="#00FF94" /> Asistente IA
         </h2>
-        
-        {!userId ? (
-          <button onClick={handleLogin} style={{ backgroundColor: '#00FF94', color: '#000', padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: '0.3s' }}>
-            <Music size={18} /> Conectar Spotify
-          </button>
-        ) : (
-          <div style={{ padding: '10px', background: '#282828', borderRadius: '8px', color: '#00FF94', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <User size={18} /> Sesión Activa
-          </div>
-        )}
-      </div>
 
-      {/* Área de Chat */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{ 
-                display: 'flex', 
-                justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-            }}>
-              <div style={{ 
-                  display: 'flex',
-                  gap: '10px',
-                  maxWidth: '75%',
-                  flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row'
-              }}>
-                {/* Avatar */}
-                <div style={{ 
-                  width: '35px', height: '35px', borderRadius: '50%', 
-                  background: msg.sender === 'user' ? '#8B5CF6' : '#282828',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                }}>
-                  {msg.sender === 'user' ? <User size={18} color="white"/> : <Bot size={18} color="#00FF94"/>}
-                </div>
-
-                {/* Burbuja de Texto */}
-                <div style={{ 
-                    background: msg.sender === 'user' ? 'transparent' : '#282828', 
-                    border: msg.sender === 'user' ? '1px solid #8B5CF6' : 'none',
-                    padding: '12px 18px', 
-                    borderRadius: '12px',
-                    color: '#e0e0e0',
-                    lineHeight: '1.5'
-                }}>
-                  {/* 3. Renderizado de Markdown */}
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Indicador de "Escribiendo..." para mitigar percepción de latencia */}
-          {isLoading && (
-            <div style={{ display: 'flex', gap: '10px' }}>
-               <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#282828', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Bot size={18} color="#00FF94"/>
-               </div>
-               <div style={{ background: '#282828', padding: '12px 18px', borderRadius: '12px', display: 'flex', alignItems: 'center' }}>
-                  <Loader2 className="animate-spin" size={20} color="#00FF94" style={{animation: 'spin 1s linear infinite'}} />
-               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <div style={{ padding: '20px', borderTop: '1px solid #333' }}>
-          <div style={{ display: 'flex', gap: '10px', background: '#282828', padding: '8px', borderRadius: '12px' }}>
-            <input 
-              type="text" 
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Ej: Recomiéndame algo similar a The Strokes..." 
-              style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: 'white', outline: 'none', fontSize: '1rem' }}
-              disabled={isLoading}
-            />
-            <button 
-              onClick={sendMessage} 
-              disabled={isLoading || !input.trim()}
-              style={{ background: input.trim() ? '#8B5CF6' : '#444', border: 'none', borderRadius: '8px', width: '50px', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s' }}
-            >
-              <Send color="white" size={20} />
+        {userId && (
+            <button onClick={handleNewChat} className="btn btn-primary">
+                <Plus size={18} /> Nuevo Chat
             </button>
-          </div>
-          <div style={{ textAlign: 'center', color: '#666', fontSize: '0.8rem', marginTop: '10px' }}>
-            Powered by Gemini & Spotify
-          </div>
+        )}
+
+        <div className="chat-list">
+            <p style={{ color: '#666', fontSize: '0.8rem', paddingLeft: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>Historial</p>
+            {chatHistoryList.map((chat) => (
+                <div 
+                    key={chat.id}
+                    onClick={() => loadConversation(chat.id)}
+                    className={`chat-item ${conversationId === chat.id ? 'active' : ''}`}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+                        <MessageSquare size={16} /> 
+                        <span style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.9rem'}}>
+                            {chat.resumen}
+                        </span>
+                    </div>
+                    <button 
+                        onClick={(e) => handleDeleteChat(e, chat.id)}
+                        style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', padding: '4px' }}
+                        title="Borrar chat"
+                    >
+                        <Trash2 size={14} className="hover:text-red-500" />
+                    </button>
+                </div>
+            ))}
+        </div>
+
+        <div className="footer-area">
+            {!userId ? (
+                <button onClick={() => setIsAuthOpen(true)} className="btn btn-spotify">
+                    <Music size={18} /> Conectar Spotify
+                </button>
+            ) : (
+                <button onClick={() => setIsSettingsOpen(true)} className="btn btn-account">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div className="avatar user" style={{width: 30, height: 30}}>
+                            <User size={16} color="white"/>
+                        </div>
+                        <span style={{ fontSize: '0.9rem' }}>Mi Cuenta</span>
+                    </div>
+                    <Settings size={18} color="#666" />
+                </button>
+            )}
         </div>
       </div>
-      
-      {/* Estilo simple para la animación de rotación */}
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+
+      {/* --- ÁREA DE CHAT --- */}
+      <div className="chat-area">
+         
+         <div className="messages-container">
+            <div className="content-wrapper">
+                
+                {/* Estado Vacío */}
+                {messages.length === 0 && (
+                    <div className="empty-state">
+                        <Music size={64} color="#333" />
+                        <p>Selecciona un chat o inicia uno nuevo.</p>
+                    </div>
+                )}
+                
+                {/* Mensajes */}
+                {messages.map((msg, i) => {
+              
+                    // Si tiene la bandera isHistory O si no es el último mensaje de la lista, lo tratamos como historial.
+                    const isHistory = msg.isHistory || i < messages.length - 1;
+
+                    if (msg.sender === 'user') {
+                        //MENSAJE DEL USUARIO 
+                        return (
+                            <div key={i} className="msg-row user">
+                                <div className="avatar user">
+                                    <User size={18} color="white"/>
+                                </div>
+                                <div className="msg-bubble user">
+                                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                </div>
+                            </div>
+                        );
+                    } else {
+                        // MENSAJE DEL BOT 
+                        return (
+                            <BotMessage 
+                                key={i}
+                                text={msg.text}
+                                spotifyData={msg.spotifyData}
+                                isHistory={isHistory} 
+                            />
+                        );
+                    }
+                })}
+                
+                {/* Loading */}
+                {isLoading && (
+                    <MessageSkeleton />
+                )}
+            </div>
+         </div>
+
+         {/* Input */}
+         <div className="input-container">
+            <div className="input-box">
+                <input 
+                    type="text" 
+                    className="input-field"
+                    value={input} onChange={(e) => setInput(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                    placeholder="Escribe tu mensaje..." 
+                    disabled={isLoading || !userId}
+                />
+                
+                <button 
+                    onClick={sendMessage} 
+                    disabled={isLoading || !input.trim()} 
+                    className={`btn btn-send ${input.trim() ? 'active' : 'inactive'}`}
+                >
+                    <Send color="white" size={20} />
+                </button>
+                
+                <button 
+                    onClick={() => setIsFeedbackOpen(true)} 
+                    disabled={!userId} 
+                    className="btn btn-icon"
+                    title="Dar Feedback"
+                >
+                    ⭐
+                </button>
+            </div>
+         </div>
+
+      </div>
+
+      {/* Modales */}
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} userId={userId} />
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+        userId={userId} 
+        onLogout={handleLogout} 
+        onHistoryCleared={() => { setChatHistoryList([]); setMessages([]); setConversationId(null); }} 
+      />
     </div>
   );
 }
