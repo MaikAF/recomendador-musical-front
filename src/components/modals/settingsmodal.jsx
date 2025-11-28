@@ -1,34 +1,17 @@
 import { X, Trash2, LogOut, User } from 'lucide-react';
-import axios from 'axios';
 
 export default function SettingsModal({ isOpen, onClose, userId, onLogout, onClearHistory }) {
   if (!isOpen) return null;
 
-  const handleLogout = async () => {
-    if (confirm("¿Estás seguro de que quieres desconectar tu cuenta?")) {
-      try {
-        await axios.delete(`http://127.0.0.1:8000/logout/${userId}`);
-        onLogout(); // Limpiar estado en el frontend
-        onClose();
-      } catch (error) {
-        console.error("Error cerrando sesión:", error);
-      }
-    }
+  const handleClearClick = () => {
+      onClearHistory();
+      onClose(); 
   };
 
-const handleClearHistory = async () => {
-    if (confirm("¿Estás seguro de que quieres borrar TODAS tus conversaciones?")) {
-        try {
-            await axios.delete(`http://127.0.0.1:8000/conversations/${userId}`);
-            alert("Historial eliminado.");
-            if (onHistoryCleared) onHistoryCleared(); // Avisar a App.jsx para limpiar la lista
-            onClose();
-        } catch (error) {
-            console.error("Error borrando historial:", error);
-            alert("Error al borrar historial.");
-        }
-    }
-  };
+  const handleLogout = () => {
+      onLogout();
+      onClose();
+  }
 
   return (
     <div style={{
@@ -57,7 +40,7 @@ const handleClearHistory = async () => {
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
           
           {/* Opción: Borrar Historial (Futuro) */}
-          <button onClick={handleClearHistory} style={{ 
+          <button onClick={handleClearClick} style={{ 
             background: '#333', border: 'none', padding: '15px', borderRadius: '10px', 
             color: 'white', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', textAlign: 'left' 
           }}>
