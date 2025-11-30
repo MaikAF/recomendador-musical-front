@@ -7,7 +7,6 @@ import SettingsModal from './components/modals/SettingsModal';
 import AuthModal from './components/modals/AuthModal';
 
 function App() {
-  // 1. Usamos el Hook Maestro
   const { 
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
