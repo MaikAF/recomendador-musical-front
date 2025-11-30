@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import Typewriter from './typewriter';
-import SpotifyCard from './spotifycard';
+import Typewriter from './TypeWriter';
+import SpotifyCard from './SpotifyCard';
 import { Bot } from 'lucide-react';
 
 export default function BotMessage({ text, spotifyData, isHistory }) {
