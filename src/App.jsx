@@ -9,10 +9,12 @@ import AuthModal from './components/modals/AuthModal';
 function App() {
   // 1. Usamos el Hook Maestro
   const { 
-    userId, conversationId, messages, chatHistoryList, isLoading,
-    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
+    userId, userName, conversationId, messages, chatHistoryList, isLoading,
+    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
     setChatHistoryList, setMessages, setConversationId, clearHistory
   } = useChat();
+
+  console.log("🟡 [App.jsx] Estado de handleLogin:", typeof handleLogin);
 
   // 2. Estados de UI (Modales) - Esto es visual, se queda aquí
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -52,7 +54,7 @@ function App() {
       />
 
       {/* Modales */}
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onLogin ={handleLogin} />
       
       <FeedbackModal 
         isOpen={isFeedbackOpen} 
@@ -64,6 +66,7 @@ function App() {
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)} 
         userId={userId} 
+        userName={userName}
         onLogout={handleLogout} 
         onClearHistory={clearHistory} 
       />

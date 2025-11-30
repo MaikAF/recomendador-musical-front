@@ -10,6 +10,20 @@ export function useChat() {
   const [messages, setMessages] = useState([]);
   const [chatHistoryList, setChatHistoryList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userName, setUserName] = useState(null);
+
+  useEffect(() => {
+      console.log("🟢 [useChat] Hook inicializado correctamente.");
+  }, []);
+
+  const fetchUserProfile = async (uid) => {
+      try {
+          const res = await axios.get(`${API_URL}/user/${uid}`);
+          if (res.data.display_name) {
+              setUserName(res.data.display_name);
+          }
+      } catch (e) { console.error(e); }
+  };
 
   // Carga Inicial
   useEffect(() => {
@@ -17,18 +31,27 @@ export function useChat() {
     const uidFromUrl = params.get('uid');
     const storedUserId = localStorage.getItem('user_session_id');
 
+    let activeUserId = null;
+
     if (uidFromUrl) {
+      // Caso A: Login nuevo
+      activeUserId = uidFromUrl;
       localStorage.setItem('user_session_id', uidFromUrl);
-      setUserId(uidFromUrl);
-      fetchConversations(uidFromUrl);
       window.history.replaceState({}, document.title, "/");
     } else if (storedUserId) {
-      setUserId(storedUserId);
-      fetchConversations(storedUserId);
+      // Caso B: Recarga de página
+      activeUserId = storedUserId;
+    }
+
+    // Lógica unificada
+    if (activeUserId) {
+      setUserId(activeUserId);
+      fetchConversations(activeUserId);
+      fetchUserProfile(activeUserId); 
     }
   }, []);
 
-  //Acciones de API
+  // Acciones de API
   const fetchConversations = async (uid) => {
     try {
       const res = await axios.get(`${API_URL}/conversations/${uid}`);
@@ -50,10 +73,28 @@ export function useChat() {
     finally { setIsLoading(false); }
   };
 
+  // --- AQUÍ ESTABA EL FALTANTE: FUNCIÓN handleLogin ---
+const handleLogin = async () => {
+    console.log("🟢 [useChat] SE LLAMÓ A handleLogin() DESDE EL HOOK"); 
+    try {
+      const targetUrl = `${API_URL}/login`;
+      console.log("🟢 [useChat] Consultando endpoint:", targetUrl);
+      
+      const response = await axios.get(targetUrl);
+      console.log("🟢 [useChat] Respuesta URL:", response.data.url);
+      
+      // Redirección
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error("🔴 [useChat] Error en handleLogin:", error);
+      alert("Error al conectar con el servidor de login.");
+    }
+  };
+  // ----------------------------------------------------
+
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
     
-    // Optimistic UI Update
     setMessages(prev => [...prev, { sender: 'user', text: text, isHistory: false }]);
     setIsLoading(true);
 
@@ -64,7 +105,6 @@ export function useChat() {
         conversation_id: conversationId
       });
 
-      // Si es chat nuevo, guardamos ID y actualizamos sidebar
       if (!conversationId) {
         setConversationId(res.data.conversation_id);
         fetchConversations(userId);
@@ -104,22 +144,16 @@ export function useChat() {
       if (!confirm("¿Estás seguro de que quieres borrar TODAS tus conversaciones?")) return;
       
       try {
-          // 1. Llamada al Backend
           await axios.delete(`${API_URL}/conversations/${userId}`);
-          
-          // 2. Limpieza Visual Inmediata (Estados)
           setChatHistoryList([]);
           setMessages([]);
           setConversationId(null);
           alert("Historial eliminado correctamente.");
-          
       } catch (error) {
           console.error("Error borrando historial:", error);
           alert("Hubo un error al intentar borrar el historial.");
       }
   };
-
-
 
   const handleLogout = () => {
     localStorage.removeItem('user_session_id');
@@ -127,12 +161,14 @@ export function useChat() {
     setMessages([]);
     setChatHistoryList([]);
     setConversationId(null);
+    setUserName(null);
     window.history.replaceState({}, document.title, "/");
   };
 
   return {
-    userId, conversationId, messages, chatHistoryList, isLoading,
-    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory
+    userId, userName, conversationId, messages, chatHistoryList, isLoading,
+    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
+    fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory,
+    handleLogin 
   };
-
 }

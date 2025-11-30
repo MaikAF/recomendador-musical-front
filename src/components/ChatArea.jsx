@@ -24,14 +24,25 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
       <div className="messages-container">
         <div className="content-wrapper">
           
-          {/* Estado Vacío */}
-          {messages.length === 0 && (
-            <div className="empty-state">
-              <Music size={64} color="#333" />
-              <p>Selecciona un chat o inicia uno nuevo.</p>
-            </div>
-          )}
-          
+
+    {/* Estado Vacío */}
+    {messages.length === 0 && (
+        <div className="welcome-box">
+            <Music size={72} color="#00FF94" style={{ marginBottom: '20px' }} />
+            
+            <p className="welcome-title">Bienvenido!</p>
+            
+            <p className="welcome-text">
+                Este es un chat de IA para recomendaciones musicales.
+            </p>
+            
+            <p className="welcome-text" style={{ fontSize: '1rem', color: '#999' }}>
+                Cuéntame si buscas algo en concreto o cómo te sientes actualmente.
+                Yo te ayudaré a encontrar la música perfecta para ti.
+            </p>
+        </div>
+    )}
+              
           {/* Lista de Mensajes */}
           {messages.map((msg, i) => {
             const isHistory = msg.isHistory || i < messages.length - 1;

@@ -1,6 +1,6 @@
 import { X, Trash2, LogOut, User } from 'lucide-react';
 
-export default function SettingsModal({ isOpen, onClose, userId, onLogout, onClearHistory }) {
+export default function SettingsModal({ isOpen, onClose, userId, userName, onLogout, onClearHistory }) {
   if (!isOpen) return null;
 
   const handleClearClick = () => {
@@ -32,8 +32,13 @@ export default function SettingsModal({ isOpen, onClose, userId, onLogout, onCle
 
         {/* Info Usuario */}
         <div style={{ padding: '20px', backgroundColor: '#1E1E1E' }}>
-          <p style={{ margin: 0, color: '#aaa', fontSize: '0.9rem' }}>Usuario ID:</p>
-          <code style={{ color: '#00FF94', fontSize: '0.8rem' }}>{userId}</code>
+          <p style={{ margin: 0, color: '#aaa', fontSize: '0.9rem' }}>Conectado como:</p>
+          
+          {/* Mostramos el Nombre Real y el ID pequeño abajo */}
+          <h2 style={{ margin: '5px 0', color: 'white', fontSize: '1.2rem' }}>
+            {userName || "Usuario Spotify"}
+          </h2>
+          <code style={{ color: '#00FF94', fontSize: '0.7rem' }}>ID: {userId}</code>
         </div>
 
         {/* Opciones */}
