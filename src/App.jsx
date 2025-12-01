@@ -10,7 +10,7 @@ function App() {
   const { 
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
-    setChatHistoryList, setMessages, setConversationId, clearHistory
+    setChatHistoryList, setMessages, setConversationId, clearHistory, sendFeedback
   } = useChat();
 
   console.log("🟡 [App.jsx] Estado de handleLogin:", typeof handleLogin);
@@ -59,6 +59,7 @@ function App() {
         isOpen={isFeedbackOpen} 
         onClose={() => setIsFeedbackOpen(false)} 
         userId={userId} 
+        onSend={sendFeedback}
       />
       
       <SettingsModal 

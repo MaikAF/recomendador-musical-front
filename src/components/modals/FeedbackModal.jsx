@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Star, X, ThumbsUp, ThumbsDown } from 'lucide-react';
-import axios from 'axios';
 
 export default function FeedbackModal({ isOpen, onClose, userId }) {
   const [rating, setRating] = useState(0);
@@ -15,22 +14,21 @@ export default function FeedbackModal({ isOpen, onClose, userId }) {
     if (rating === 0) return alert("Por favor califica con estrellas");
     
     setIsSubmitting(true);
-    try {
-      await axios.post('http://127.0.0.1:8000/feedback', {
-        user_id: userId,
-        rating: rating,
-        pleasant_interaction: pleasant === true,
-        motivated_exploration: motivated === true,
-        comments: comments
-      });
+    const result = await onSend({
+      rating: rating,
+      pleasant_interaction: pleasant === true,
+      motivated_exploration: motivated === true,
+      comments: comments
+    });
+
+    if (result.success) {
       alert("¡Gracias por tu opinión!");
-      onClose(); // Cerrar modal al terminar
-    } catch (error) {
-      console.error("Error enviando feedback:", error);
-      alert("Error al enviar. Intenta nuevamente.");
-    } finally {
-      setIsSubmitting(false);
+      onClose();
+    } else {
+
+      alert("Error al enviar. Intenta nuevamente."); 
     }
+    setIsSubmitting(false);
   };
 
   return (

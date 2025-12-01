@@ -155,6 +155,23 @@ const handleLogin = async () => {
       }
   };
 
+  const sendFeedback = async (data) => {
+    if (!userId) return;
+    try {
+        // Usamos la URL centralizada del hook
+        await axios.post(`${API_URL}/feedback`, {
+            ...data,
+            user_id: userId
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Error enviando feedback (Server):", error);
+        return { success: false, message: "Error de red/servidor" };
+    }
+  };
+
+
+
   const handleLogout = () => {
     localStorage.removeItem('user_session_id');
     setUserId(null);
@@ -169,6 +186,6 @@ const handleLogin = async () => {
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
     fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory,
-    handleLogin 
+    handleLogin, sendFeedback
   };
 }
