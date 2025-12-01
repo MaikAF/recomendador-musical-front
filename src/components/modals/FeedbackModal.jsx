@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Star, X, ThumbsUp, ThumbsDown } from 'lucide-react';
 
-export default function FeedbackModal({ isOpen, onClose, userId }) {
+export default function FeedbackModal({ isOpen, onClose, userId, onSend }) {
   const [rating, setRating] = useState(0);
   const [pleasant, setPleasant] = useState(null); // true/false
   const [motivated, setMotivated] = useState(null); // true/false
