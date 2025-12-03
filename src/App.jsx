@@ -3,7 +3,7 @@ import { useChat } from './hooks/useChat';
 import Sidebar from './components/SideBar';
 import ChatArea from './components/ChatArea';
 import FeedbackModal from './components/modals/feedbackmodal';
-import SettingsModal from './components/modals/settingsodal';
+import SettingsModal from './components/modals/settingsmodal';
 import AuthModal from './components/modals/authmodal';
 import { Menu } from 'lucide-react';
 
