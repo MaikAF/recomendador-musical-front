@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useChat } from './hooks/useChat';
 import Sidebar from './components/SideBar';
 import ChatArea from './components/ChatArea';
-import FeedbackModal from './components/modals/FeedbackModal';
-import SettingsModal from './components/modals/SettingsModal';
-import AuthModal from './components/modals/AuthModal';
+import FeedbackModal from './components/modals/feedbackmodal';
+import SettingsModal from './components/modals/settingsodal';
+import AuthModal from './components/modals/authmodal';
 import { Menu } from 'lucide-react';
 
 function App() {

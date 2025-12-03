@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Send, Music, User, Bot, Loader2 } from 'lucide-react';
-import BotMessage from './ui/BotMessage';
+import BotMessage from './ui/botmessage';
 import MessageSkeleton from './ui/messageskeleton';
 
 export default function ChatArea({ messages, isLoading, userId, onSendMessage, onOpenFeedback }) {
