@@ -5,13 +5,14 @@ import ChatArea from './components/ChatArea';
 import FeedbackModal from './components/modals/FeedbackModal';
 import SettingsModal from './components/modals/SettingsModal';
 import AuthModal from './components/modals/AuthModal';
+import { Menu } from 'lucide-react';
 
 function App() {
   // 1. Usamos el Hook Maestro
   const { 
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
-    setChatHistoryList, setMessages, setConversationId, clearHistory
+    setChatHistoryList, setMessages, setConversationId, clearHistory  
   } = useChat();
 
   console.log("🟡 [App.jsx] Estado de handleLogin:", typeof handleLogin);
@@ -20,6 +21,8 @@ function App() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   // Efecto para abrir AuthModal si no hay usuario 
   useEffect(() => {
@@ -33,7 +36,19 @@ function App() {
 
   return (
     <div className="app-container">
-      
+      {/* Botón Hamburguesa Visible solo en móvil por CSS */}
+      <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)}>
+        <Menu size={24} />
+      </button>
+
+      {/* Overlay Oscuro para Cerrar en Móvil */}
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-overlay visible" 
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       <Sidebar 
         userId={userId}
         chatHistoryList={chatHistoryList}
@@ -43,6 +58,8 @@ function App() {
         onDeleteChat={handleDeleteChat}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <ChatArea 

@@ -4,13 +4,29 @@ import { Plus, MessageSquare, Trash2, Music, User, Settings } from 'lucide-react
 export default function Sidebar({ 
     userId, chatHistoryList, conversationId, 
     onNewChat, onLoadChat, onDeleteChat, 
-    onOpenAuth, onOpenSettings 
+    onOpenAuth, onOpenSettings, isOpen, onClose
 }) {
+
+  const handleLoadChatAndClose = (id) => {
+      onLoadChat(id);
+      onClose(); // Cerrar el menú después de seleccionar un chat
+  };
+
+  const truncate = (str) => {
+    const limit = 28;
+    return (str.length > limit) ? str.slice(0, limit) + '...' : str;
+  };
+
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 20px 0' }}>
       <h2 className="sidebar-header">
         <Music color="#00FF94" /> Asistente IA
       </h2>
+      <button onClick={onClose} className="menu-close-btn" style={{background: 'none', border:'none', cursor: 'pointer', color: '#666'}}>
+          <X size={20} />
+      </button>
+    </div>
 
       {userId && (
         <button onClick={onNewChat} className="btn btn-primary">
@@ -23,13 +39,13 @@ export default function Sidebar({
         {chatHistoryList.map((chat) => (
           <div 
             key={chat.id}
-            onClick={() => onLoadChat(chat.id)}
+            onClick={() => onLoadChatAndClose(chat.id)}
             className={`chat-item ${conversationId === chat.id ? 'active' : ''}`}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+            <div className='chat-title' title={chat.resumen}>
               <MessageSquare size={16} /> 
               <span style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.9rem'}}>
-                {chat.resumen}
+                {truncate(chat.resumen)}
               </span>
             </div>
             <button 

@@ -356,3 +356,66 @@ body {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Botón de Menú (Solo visible en móvil) */
+.menu-toggle-btn {
+  display: none; /* Oculto en escritorio */
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 100;
+  background: #282828;
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* --- RESPONSIVIDAD MÓVIL (Pantallas < 768px) --- */
+@media (max-width: 768px) {
+  .app-container {
+    position: relative; /* Para posicionar el menú absoluto */
+  }
+
+  .menu-toggle-btn {
+    display: block; /* Mostrar botón hamburguesa */
+  }
+
+  .sidebar {
+    position: absolute;
+    left: -100%; /* Ocultar fuera de pantalla a la izquierda */
+    top: 0;
+    height: 100%;
+    width: 80%; /* Ocupar casi toda la pantalla */
+    max-width: 300px;
+    z-index: 200; /* Encima del chat */
+    transition: left 0.3s ease-in-out;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+  }
+
+  .sidebar.open {
+    left: 0; /* Mostrar al deslizar */
+  }
+
+  /* Overlay oscuro cuando el menú está abierto */
+  .sidebar-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 150;
+    display: none;
+  }
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Ajustes del chat en móvil */
+  .content-wrapper {
+    padding-top: 50px; /* Espacio para el botón de menú */
+  }
+  
+  .input-box {
+    width: 95%; /* Input casi del ancho total */
+  }
+}
