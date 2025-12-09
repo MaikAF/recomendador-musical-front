@@ -403,6 +403,9 @@ body {
   /* Ajustes del chat para dejar espacio al botón de menú */
   .chat-area {
     width: 100%;
+    bottom: 10px;
+    top: 10px;
+    height: auto;
   }
 
   /* Ocultar el botón de cierre X en el header del sidebar en ESCRITORIO */
