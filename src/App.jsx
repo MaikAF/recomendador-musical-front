@@ -38,7 +38,6 @@ function App() {
       <button 
         className="menu-toggle-btn btn-icon" 
         onClick={() => setIsSidebarOpen(true)}
-        style={{display: 'none', position: 'fixed', top: '15px', left: '15px'}} // Estilos para que se vea en móvil y no en desktop
       >
         <Menu size={24} />
       </button>
