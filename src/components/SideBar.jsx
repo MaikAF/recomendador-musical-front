@@ -12,8 +12,8 @@ export default function Sidebar({
       <h2 className="sidebar-header">
         <Music color="#00FF94" /> Asistente IA
       </h2>
-      <button onClick={onClose} style={{background: 'none', border:'none', cursor: 'pointer', color: '#666'}}>
-        <X size={20} />
+      <button onClick={onClose} className="menu-close-btn" style={{background: 'none', border:'none', cursor: 'pointer', color: '#666'}}>
+        <X size={20}/>
       </button>
     </div>
 
