@@ -5,6 +5,7 @@ import ChatArea from './components/ChatArea';
 import FeedbackModal from './components/modals/FeedbackModal';
 import SettingsModal from './components/modals/SettingsModal';
 import AuthModal from './components/modals/AuthModal';
+import { Menu } from 'lucide-react';
 
 function App() {
   const { 
@@ -19,6 +20,7 @@ function App() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Efecto para abrir AuthModal si no hay usuario 
   useEffect(() => {
@@ -32,6 +34,14 @@ function App() {
 
   return (
     <div className="app-container">
+
+      <button 
+        className="menu-toggle-btn btn-icon" 
+        onClick={() => setIsSidebarOpen(true)}
+        style={{display: 'none', position: 'fixed', top: '15px', left: '15px'}} // Estilos para que se vea en móvil y no en desktop
+      >
+        <Menu size={24} />
+      </button>
       
       <Sidebar 
         userId={userId}
@@ -42,6 +52,8 @@ function App() {
         onDeleteChat={handleDeleteChat}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <ChatArea 

@@ -356,3 +356,45 @@ body {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.menu-toggle-btn {
+  display: none; 
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 100;
+  /* ... estilos ... */
+}
+
+
+@media (max-width: 768px) {
+  .menu-toggle-btn {
+    display: block; /* Mostrar botón hamburguesa */
+  }
+
+  .sidebar {
+    position: absolute;
+    left: -100%; /* OCULTAR FUERA DE PANTALLA */
+    top: 0;
+    height: 100%;
+    width: 85%; /* Ocupar casi toda la pantalla */
+    max-width: 300px;
+    z-index: 200; 
+    transition: left 0.3s ease-in-out;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+  }
+
+  .sidebar.open {
+    left: 0; /* MOSTRAR AL ABRIR */
+  }
+
+  /* Ajustes del chat para dejar espacio al botón de menú */
+  .chat-area {
+    width: 100%;
+  }
+
+  /* Ocultar el botón de cierre X en el header del sidebar en ESCRITORIO */
+  .sidebar-header + .menu-close-btn {
+    display: block !important; /* Asegurar que se muestre dentro del sidebar */
+  }
+}

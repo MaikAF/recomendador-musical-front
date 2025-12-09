@@ -4,19 +4,25 @@ import { Plus, MessageSquare, Trash2, Music, User, Settings } from 'lucide-react
 export default function Sidebar({ 
     userId, chatHistoryList, conversationId, 
     onNewChat, onLoadChat, onDeleteChat, 
-    onOpenAuth, onOpenSettings 
+    onOpenAuth, onOpenSettings, isOpen, onClose
 }) {
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 20px 0' }}>
       <h2 className="sidebar-header">
         <Music color="#00FF94" /> Asistente IA
       </h2>
+      <button onClick={onClose} style={{background: 'none', border:'none', cursor: 'pointer', color: '#666'}}>
+        <X size={20} />
+      </button>
+    </div>
 
       {userId && (
         <button onClick={onNewChat} className="btn btn-primary">
           <Plus size={18} /> Nuevo Chat
         </button>
       )}
+
 
       <div className="chat-list">
         <p style={{ color: '#666', fontSize: '0.8rem', paddingLeft: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>Historial</p>
