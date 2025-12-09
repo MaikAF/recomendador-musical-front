@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Music, User, Settings } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Music, User, Settings, X } from 'lucide-react';
 
 export default function Sidebar({ 
     userId, chatHistoryList, conversationId, 
