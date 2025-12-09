@@ -367,6 +367,9 @@ body {
   border: 1px solid #444;
 }
 
+.menu-close-btn {
+  display: none; 
+}
 
 @media (max-width: 768px) {
   .menu-toggle-btn {
@@ -380,15 +383,17 @@ body {
   }
 
   .sidebar {
-    position: absolute;
+    position: fixed;
     left: -100%; /* OCULTAR FUERA DE PANTALLA */
-    top: 0;
-    height: 100%;
+    top: 10px;
+    bottom: 10px;
+    height: auto;
     width: 85%; /* Ocupar casi toda la pantalla */
     max-width: 300px;
     z-index: 200; 
     transition: left 0.3s ease-in-out;
     box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+    border-radius: 12px;
   }
 
   .sidebar.open {
