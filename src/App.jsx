@@ -8,7 +8,7 @@ import AuthModal from './components/modals/authmodal';
 import { Menu } from 'lucide-react';
 
 function App() {
-  // 1. Usamos el Hook Maestro
+  // Hook useChat para manejar la lógica del chat y autenticación
   const { 
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
@@ -17,7 +17,7 @@ function App() {
 
   console.log("🟡 [App.jsx] Estado de handleLogin:", typeof handleLogin);
 
-  // 2. Estados de UI (Modales) - Esto es visual, se queda aquí
+  // Estados de UI 
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);

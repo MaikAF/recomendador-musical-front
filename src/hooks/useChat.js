@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Definimos la URL base (ajustable por variable de entorno)
+// Configuración de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export function useChat() {
@@ -73,7 +73,7 @@ export function useChat() {
     finally { setIsLoading(false); }
   };
 
-  // --- AQUÍ ESTABA EL FALTANTE: FUNCIÓN handleLogin ---
+
 const handleLogin = async () => {
     console.log("🟢 [useChat] SE LLAMÓ A handleLogin() DESDE EL HOOK"); 
     try {
@@ -90,7 +90,7 @@ const handleLogin = async () => {
       alert("Error al conectar con el servidor de login.");
     }
   };
-  // ----------------------------------------------------
+  
 
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
