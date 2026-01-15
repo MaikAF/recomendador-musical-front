@@ -16,7 +16,7 @@ export default function FeedbackModal({ isOpen, onClose, userId }) {
     
     setIsSubmitting(true);
     try {
-      await axios.post('http://127.0.0.1:8000/feedback', {
+      await axios.post('${API_URL}/feedback', {
         user_id: userId,
         rating: rating,
         pleasant_interaction: pleasant === true,
