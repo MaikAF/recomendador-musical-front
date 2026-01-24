@@ -39,6 +39,7 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
             <p className="welcome-text" style={{ fontSize: '1rem', color: '#999' }}>
                 Cuéntame si buscas algo en concreto o cómo te sientes actualmente.
                 Yo te ayudaré a encontrar la música perfecta para ti.
+
             </p>
         </div>
     )}
@@ -97,6 +98,17 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
             ⭐
           </button>
         </div>
+
+        <p style={{
+            textAlign: 'center',
+            fontSize: '0.7rem',     
+            color: 'rgba(255, 255, 255, 0.4)', 
+            marginTop: '8px',
+            marginBottom: '0'
+        }}>
+            Songyapper puede cometer errores. No tomes sus respuestas como la verdad absoluta.
+        </p>
+
       </div>
     </div>
   );
