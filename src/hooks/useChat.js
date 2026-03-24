@@ -3,6 +3,8 @@ import axios from 'axios';
 
 // Definimos la URL base (ajustable por variable de entorno)
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+console.log("🟢 [useChat] API_URL configurada como:", API_URL);
+
 
 export function useChat() {
   const [userId, setUserId] = useState(null);
