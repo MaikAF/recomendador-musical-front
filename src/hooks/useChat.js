@@ -94,6 +94,37 @@ const handleLogin = async () => {
   };
   // ----------------------------------------------------
 
+// --- NUEVA FUNCIÓN: LOGIN CON LAST.FM ---
+  const handleLastFMLogin = async (username) => {
+    if (!username || !username.trim()) return { success: false, message: "El usuario no puede estar vacío" };
+    
+    setIsLoading(true);
+    try {
+        console.log("🟢 [useChat] Conectando usuario de Last.FM:", username);
+        const res = await axios.post(`${API_URL}/login/lastfm`, {
+            lastfm_username: username
+        });
+
+        if (res.data.status === "success") {
+            const internalUserId = res.data.user_id;
+            
+            // Replicamos el flujo de éxito (Caso A)
+            localStorage.setItem('user_session_id', internalUserId);
+            setUserId(internalUserId);
+            setUserName(res.data.display_name);
+            fetchConversations(internalUserId);
+            
+            return { success: true };
+        }
+    } catch (error) {
+        console.error("🔴 [useChat] Error en handleLastFMLogin:", error);
+        return { success: false, message: "Error al conectar con el servidor." };
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  // ----------------------------------------------------
+  
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
     
@@ -188,6 +219,6 @@ const handleLogin = async () => {
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
     fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory,
-    handleLogin, sendFeedback
+    handleLogin, handleLastFMLogin, sendFeedback
   };
 }

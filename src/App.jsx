@@ -10,7 +10,7 @@ import { Menu } from 'lucide-react';
 function App() {
   const { 
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
-    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLogout, 
+    sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogin, handleLastFMLogin, handleLogout, 
     setChatHistoryList, setMessages, setConversationId, clearHistory, sendFeedback
   } = useChat();
 
@@ -64,7 +64,7 @@ function App() {
       />
 
       {/* Modales */}
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onLogin ={handleLogin} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onLogin ={handleLogin} onLastFMLogin={handleLastFMLogin} />
       
       <FeedbackModal 
         isOpen={isFeedbackOpen} 
