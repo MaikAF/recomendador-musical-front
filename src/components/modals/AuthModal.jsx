@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Music, X, Radio } from 'lucide-react';
+import { Music, X, Radio} from 'lucide-react';
+import { SiYoutube } from '@icons-pack/react-simple-icons'
 
-export default function AuthModal({ isOpen, onClose, onLogin, onLastFMLogin }) {
+export default function AuthModal({ isOpen, onClose, onLogin, onLastFMLogin, onYTMusicLogin }) {
   const [lastFmUsername, setLastFmUsername] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -65,6 +66,17 @@ export default function AuthModal({ isOpen, onClose, onLogin, onLastFMLogin }) {
                 O usar perfil público
             </span>
         </div>
+        
+        {/* BOTÓN YOUTUBE MUSIC (Rojo) */}
+            <button 
+                onClick={() => {
+                    console.log("🔴 [AuthModal] Click en YouTube Music");
+                    onYTMusicLogin();
+                }}
+                style={{ width: '100%', backgroundColor: '#FF0000', color: '#fff', padding: '14px', border: 'none', borderRadius: '30px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+            >
+                <SiYoutube size={20} /> YouTube Music
+            </button>        
 
         {/* Formulario Last.FM */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '35px' }}>

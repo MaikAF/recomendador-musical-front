@@ -125,6 +125,22 @@ const handleLogin = async () => {
   };
   // ----------------------------------------------------
   
+// --- FUNCIÓN: LOGIN CON YOUTUBE MUSIC ---
+  const handleYTMusicLogin = async () => {
+    console.log("🟢 [useChat] Iniciando login de YouTube Music..."); 
+    try {
+      const targetUrl = `${API_URL}/login/ytmusic`;
+      const response = await axios.get(targetUrl);
+      
+      // Redirección a la pantalla de Google
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error("🔴 [useChat] Error en handleYTMusicLogin:", error);
+      alert("Error al conectar con Google/YouTube Music.");
+    }
+  };
+
+
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
     
@@ -219,6 +235,6 @@ const handleLogin = async () => {
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
     fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory,
-    handleLogin, handleLastFMLogin, sendFeedback
+    handleLogin, handleLastFMLogin, handleYTMusicLogin, sendFeedback
   };
 }
