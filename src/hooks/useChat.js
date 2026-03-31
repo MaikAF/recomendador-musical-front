@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 // Definimos la URL base (ajustable por variable de entorno)
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 console.log("🟢 [useChat] API_URL configurada como:", API_URL);
@@ -68,7 +69,7 @@ export function useChat() {
       const res = await axios.get(`${API_URL}/history/${userId}/${convId}`);
       setConversationId(convId);
       const formattedMsgs = res.data.messages.map(m => ({
-        sender: m.role, text: m.text, isHistory: true
+        sender: m.role, text: m.text, spotifyData: m.spotify_data, previewData: m.preview_data, isHistory: true
       }));
       setMessages(formattedMsgs);
     } catch (error) { console.error("Error carga chat:", error); }
@@ -163,6 +164,7 @@ const handleLogin = async () => {
         sender: 'bot', 
         text: res.data.response, 
         spotifyData: res.data.spotify_data,
+        previewData: res.data.preview_data,
         isHistory: false
       }]);
     } catch (error) {
