@@ -5,9 +5,9 @@ const Typewriter = ({ text, speed = 15, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Efecto para manejar el tipeo progresivo
+  // Control de tipeo
   useEffect(() => {
-    // Si el texto prop cambia drásticamente (nueva respuesta), reiniciamos
+    // Reiniciar si cambia el texto
     if (text && currentIndex === 0) {
         setDisplayedText('');
     }
@@ -20,14 +20,14 @@ const Typewriter = ({ text, speed = 15, onComplete }) => {
 
       return () => clearTimeout(timeout);
     } else {
-      // Cuando termina de escribir todo el texto
+      // Notificar término
       if (onComplete) {
         onComplete();
       }
     }
   }, [currentIndex, text, speed, onComplete]);
 
-  // Renderizamos con Markdown para que se vean las negritas/cursivas mientras escribe
+
   return <ReactMarkdown>{displayedText}</ReactMarkdown>;
 };
 

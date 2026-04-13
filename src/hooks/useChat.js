@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Definimos la URL base (ajustable por variable de entorno)
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export function useChat() {
@@ -25,7 +25,7 @@ export function useChat() {
       } catch (e) { console.error(e); }
   };
 
-  // Carga Inicial
+  // Inicialización
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const uidFromUrl = params.get('uid');
@@ -34,16 +34,16 @@ export function useChat() {
     let activeUserId = null;
 
     if (uidFromUrl) {
-      // Caso A: Login nuevo
+      // Login reciente
       activeUserId = uidFromUrl;
       localStorage.setItem('user_session_id', uidFromUrl);
       window.history.replaceState({}, document.title, "/");
     } else if (storedUserId) {
-      // Caso B: Recarga de página
+      // Sesión existente
       activeUserId = storedUserId;
     }
 
-    // Lógica unificada
+
     if (activeUserId) {
       setUserId(activeUserId);
       fetchConversations(activeUserId);
@@ -51,7 +51,7 @@ export function useChat() {
     }
   }, []);
 
-  // Acciones de API
+  // Endpoints
   const fetchConversations = async (uid) => {
     try {
       const res = await axios.get(`${API_URL}/conversations/${uid}`);
@@ -73,7 +73,7 @@ export function useChat() {
     finally { setIsLoading(false); }
   };
 
-  // --- AQUÍ ESTABA EL FALTANTE: FUNCIÓN handleLogin ---
+
 const handleLogin = async () => {
     console.log("🟢 [useChat] SE LLAMÓ A handleLogin() DESDE EL HOOK"); 
     try {
@@ -83,14 +83,14 @@ const handleLogin = async () => {
       const response = await axios.get(targetUrl);
       console.log("🟢 [useChat] Respuesta URL:", response.data.url);
       
-      // Redirección
+
       window.location.href = response.data.url;
     } catch (error) {
       console.error("🔴 [useChat] Error en handleLogin:", error);
       alert("Error al conectar con el servidor de login.");
     }
   };
-  // ----------------------------------------------------
+
 
   const sendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
@@ -158,7 +158,7 @@ const handleLogin = async () => {
   const sendFeedback = async (data) => {
     if (!userId) return;
     try {
-        // Usamos la URL centralizada del hook
+
         await axios.post(`${API_URL}/feedback`, {
             ...data,
             user_id: userId

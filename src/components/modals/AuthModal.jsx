@@ -3,7 +3,7 @@ import { Music, X } from 'lucide-react';
 export default function AuthModal({ isOpen, onClose, onLogin }) {
   if (!isOpen) return null;
 
-  // DEBUG: Verificar qué recibió el modal
+
   console.log("🟣 [AuthModal] Renderizado. onLogin es tipo:", typeof onLogin);
 
   return (
@@ -14,7 +14,7 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
           <X />
         </button>
 
-        {/* ... (Icono y Texto) ... */}
+
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
              <div style={{ background: '#282828', padding: '20px', borderRadius: '50%' }}>
                 <Music size={48} color="#00FF94" />

@@ -16,13 +16,13 @@ function App() {
 
   console.log("🟡 [App.jsx] Estado de handleLogin:", typeof handleLogin);
 
-  // 2. Estados de UI (Modales) - Esto es visual, se queda aquí
+  // Modales
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Efecto para abrir AuthModal si no hay usuario 
+  // Autenticación inicial
   useEffect(() => {
     if (!userId && !localStorage.getItem('user_session_id')) {
         const params = new URLSearchParams(window.location.search);

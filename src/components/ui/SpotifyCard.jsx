@@ -3,7 +3,7 @@ import { ExternalLink, Music, Disc, Mic2, ListMusic } from 'lucide-react';
 export default function SpotifyCard({ data }) {
   if (!data) return null;
 
-  // Elegir icono según el tipo
+  // Mapeo de iconos
   const getIcon = () => {
     switch(data.type) {
         case 'artist': return <Mic2 size={24} />;
@@ -19,17 +19,17 @@ return (
         backgroundColor: '#1DB954',
         color: 'black',
         borderRadius: '12px',
-        padding: '0', /* Quitamos padding general para que la imagen toque bordes si quisieramos, o lo dejamos interno */
+        padding: '0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         maxWidth: '400px',
-        overflow: 'hidden', /* Para recortar la imagen si es necesario */
+        overflow: 'hidden',
         boxShadow: '0 4px 15px rgba(29, 185, 84, 0.3)'
     }}>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
-        {/* IMAGEN O ICONO */}
+        {/* Imagen/Icono */}
         {data.image ? (
             <img 
                 src={data.image} 
@@ -46,7 +46,7 @@ return (
             </div>
         )}
 
-        {/* TEXTO */}
+        {/* Contenido */}
         <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0', overflow: 'hidden' }}>
             <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 'bold', opacity: 0.8 }}>
                 {data.type === 'track' ? 'Canción' : data.type}
@@ -57,7 +57,7 @@ return (
         </div>
       </div>
 
-      {/* BOTÓN PLAY */}
+      {/* Acción */}
       <a 
         href={data.url} 
         target="_blank" 

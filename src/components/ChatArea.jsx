@@ -8,7 +8,7 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll al fondo
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
@@ -44,7 +44,7 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
         </div>
     )}
               
-          {/* Lista de Mensajes */}
+          {/* Historial */}
           {messages.map((msg, i) => {
             const isHistory = msg.isHistory || i < messages.length - 1;
             
@@ -74,7 +74,7 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
         </div>
       </div>
 
-      {/* Input Area */}
+      {/* Input */}
       <div className="input-container">
         <div className="input-box">
           <input 

@@ -60,7 +60,7 @@ export default function FeedbackModal({ isOpen, onClose, userId, onSend }) {
           ))}
         </div>
 
-        {/* Pregunta 1: Interacción agradable */}
+        {/* Pregunta 1 */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '0.9rem', marginBottom: '10px' }}>¿La interacción fue agradable?</p>
           <div style={{ display: 'flex', gap: '15px' }}>
@@ -77,7 +77,7 @@ export default function FeedbackModal({ isOpen, onClose, userId, onSend }) {
           </div>
         </div>
 
-        {/* Pregunta 2: Motivación (Sí/No) */}
+        {/* Pregunta 2 */}
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '0.9rem', marginBottom: '10px' }}>¿Te motivó a explorar música?</p>
           <div style={{ display: 'flex', gap: '15px' }}>
@@ -94,7 +94,7 @@ export default function FeedbackModal({ isOpen, onClose, userId, onSend }) {
           style={{ width: '100%', height: '80px', backgroundColor: '#121212', border: 'none', borderRadius: '8px', color: 'white', padding: '10px', marginBottom: '20px', resize: 'none' }}
         />
 
-        {/* Botones Acción */}
+        {/* Acciones */}
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #444', background: 'transparent', color: 'white', cursor: 'pointer' }}>Cancelar</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: '#8B5CF6', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
