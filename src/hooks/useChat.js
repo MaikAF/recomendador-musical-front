@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 
+// Definimos la URL base (ajustable por variable de entorno)
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+console.log("🟢 [useChat] API_URL configurada como:", API_URL);
+
 
 export function useChat() {
   const [userId, setUserId] = useState(null);
@@ -66,7 +69,7 @@ export function useChat() {
       const res = await axios.get(`${API_URL}/history/${userId}/${convId}`);
       setConversationId(convId);
       const formattedMsgs = res.data.messages.map(m => ({
-        sender: m.role, text: m.text, isHistory: true
+        sender: m.role, text: m.text, spotifyData: m.spotify_data, previewData: m.preview_data, isHistory: true
       }));
       setMessages(formattedMsgs);
     } catch (error) { console.error("Error carga chat:", error); }
@@ -88,6 +91,53 @@ const handleLogin = async () => {
     } catch (error) {
       console.error("🔴 [useChat] Error en handleLogin:", error);
       alert("Error al conectar con el servidor de login.");
+    }
+  };
+
+
+// --- NUEVA FUNCIÓN: LOGIN CON LAST.FM ---
+  const handleLastFMLogin = async (username) => {
+    if (!username || !username.trim()) return { success: false, message: "El usuario no puede estar vacío" };
+    
+    setIsLoading(true);
+    try {
+        console.log("🟢 [useChat] Conectando usuario de Last.FM:", username);
+        const res = await axios.post(`${API_URL}/login/lastfm`, {
+            lastfm_username: username
+        });
+
+        if (res.data.status === "success") {
+            const internalUserId = res.data.user_id;
+            
+            // Replicamos el flujo de éxito (Caso A)
+            localStorage.setItem('user_session_id', internalUserId);
+            setUserId(internalUserId);
+            setUserName(res.data.display_name);
+            fetchConversations(internalUserId);
+            
+            return { success: true };
+        }
+    } catch (error) {
+        console.error("🔴 [useChat] Error en handleLastFMLogin:", error);
+        return { success: false, message: "Error al conectar con el servidor." };
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  // ----------------------------------------------------
+  
+// --- FUNCIÓN: LOGIN CON YOUTUBE MUSIC ---
+  const handleYTMusicLogin = async () => {
+    console.log("🟢 [useChat] Iniciando login de YouTube Music..."); 
+    try {
+      const targetUrl = `${API_URL}/login/ytmusic`;
+      const response = await axios.get(targetUrl);
+      
+      // Redirección a la pantalla de Google
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error("🔴 [useChat] Error en handleYTMusicLogin:", error);
+      alert("Error al conectar con Google/YouTube Music.");
     }
   };
 
@@ -114,6 +164,7 @@ const handleLogin = async () => {
         sender: 'bot', 
         text: res.data.response, 
         spotifyData: res.data.spotify_data,
+        previewData: res.data.preview_data,
         isHistory: false
       }]);
     } catch (error) {
@@ -186,6 +237,6 @@ const handleLogin = async () => {
     userId, userName, conversationId, messages, chatHistoryList, isLoading,
     sendMessage, loadConversation, handleNewChat, handleDeleteChat, handleLogout, 
     fetchConversations, setChatHistoryList, setMessages, setConversationId, clearHistory,
-    handleLogin, sendFeedback
+    handleLogin, handleLastFMLogin, handleYTMusicLogin, sendFeedback
   };
 }

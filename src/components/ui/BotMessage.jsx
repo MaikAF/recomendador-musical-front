@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Typewriter from './TypeWriter';
 import SpotifyCard from './SpotifyCard';
+import PreviewCard from './PreviewCard';
 import { Bot } from 'lucide-react';
 
-export default function BotMessage({ text, spotifyData, isHistory }) {
-  // Secuencia animada
+export default function BotMessage({ text, spotifyData, previewData, isHistory }) {
+  console.log("💿 Datos recibidos en BotMessage:", { spotifyData, previewData });
+  // Estados para controlar la secuencia de aparición
   const [part1Finished, setPart1Finished] = useState(false);
   
   // Fragmentación
@@ -20,7 +22,13 @@ export default function BotMessage({ text, spotifyData, isHistory }) {
         <div className="avatar bot"><Bot size={18} color="#00FF94"/></div>
         <div className="msg-bubble bot">
           <ReactMarkdown>{introText}</ReactMarkdown>
-          {spotifyData && <SpotifyCard data={spotifyData} />}
+          
+          {/* AQUI MOSTRAMOS AMBAS EN EL HISTORIAL */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '10px 0' }}>
+              {previewData && <PreviewCard data={previewData} />}
+              {spotifyData && <SpotifyCard data={spotifyData} />}
+          </div>
+
           {detailsText && <ReactMarkdown>{detailsText}</ReactMarkdown>}
         </div>
       </div>
@@ -39,10 +47,11 @@ export default function BotMessage({ text, spotifyData, isHistory }) {
           onComplete={() => setPart1Finished(true)} 
         />
 
-
-        {part1Finished && spotifyData && (
-          <div className="fade-in-card">
-            <SpotifyCard data={spotifyData} />
+        {/*SEGUNDA PARTE, TARJETAS (Aparecen juntas al terminar la intro)*/}
+        {part1Finished && (previewData || spotifyData) && (
+          <div className="fade-in-card" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {previewData && <PreviewCard data={previewData} />}
+            {spotifyData && <SpotifyCard data={spotifyData} />}
           </div>
         )}
 

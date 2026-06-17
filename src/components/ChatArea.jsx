@@ -61,6 +61,7 @@ export default function ChatArea({ messages, isLoading, userId, onSendMessage, o
                   key={i} 
                   text={msg.text} 
                   spotifyData={msg.spotifyData} 
+                  previewData={msg.previewData}
                   isHistory={isHistory} 
                 />
               );
