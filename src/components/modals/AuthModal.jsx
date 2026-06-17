@@ -9,10 +9,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, onLastFMLogin, onY
 
   if (!isOpen) return null;
 
-<<<<<<< HEAD
-
-  console.log("🟣 [AuthModal] Renderizado. onLogin es tipo:", typeof onLogin);
-=======
   // Manejador del botón de Last.FM
   const submitLastFm = async () => {
       if (!lastFmUsername.trim()) {
@@ -34,7 +30,6 @@ export default function AuthModal({ isOpen, onClose, onLogin, onLastFMLogin, onY
           setErrorMsg(result?.message || "No se pudo conectar con Last.FM");
       }
   };
->>>>>>> New-Dev
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
